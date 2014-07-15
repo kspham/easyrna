@@ -1,0 +1,1 @@
+Rscript EasyRNA.R fpkm '[{"items":[{"name":"test2","sf":"./example/data2.sf"}],"name":"Group D"},{"items":[{"name":"test1","sf":"./example/data1.sf"}],"name":"Group C"}]' 5
