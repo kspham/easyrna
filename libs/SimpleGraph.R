@@ -2,7 +2,7 @@
 ###Created on Jul 13, 2014
 ###Simple graph class
 
-SimpleGraph <- function(){
+SimpleGraph <- function(debugFlag = FALSE){
   ###Class description
   information = list(
     author = "Linuxpham <thaihoabo@gmail.com>",
@@ -14,6 +14,7 @@ SimpleGraph <- function(){
   ###Class table
   classTable = list(
     infor = information,
+    debug = debugFlag,
     get = function(x) classTable[[x]],
     set = function(x, value) classTable[[x]] <<- value
   )
@@ -33,6 +34,49 @@ SimpleGraph <- function(){
     
     ###Return data
     return(iTotalLine)
+  }
+  
+  ###Draw FPKM graph
+  classTable$drawFPKM <- function(arrInputData, outputFilePath, iMaxNumber) {
+    ###Debug information
+    if(classTable$debug == TRUE) {
+      for (iLoop in 1:length(arrInputData)) {
+        print(arrInputData[[iLoop]]$name)
+      }
+    }    
+    
+    ###Create vector for graph
+    arrXLim <- c()
+    arrYLim <- c()
+    
+    ###Loop group to get sample and execute the FPKM processing
+    for (groupName in arrInputData) {
+      for (itemName in groupName$items) {
+        arrXLim <- append(arrXLim, itemName$name)
+        arrYLim <- append(arrYLim, classTable$getFPKMCounter(itemName$sf, iMaxNumber))
+      }      
+    }
+    
+    ###Create a title name
+    yTitleName <- sprintf("FPKM > %d", iMaxNumber)
+    xTitleName <- "RNA Samples"
+    
+    ###Create plot data
+    plotData <- data.frame(
+      Sample=factor(arrXLim),
+      FPKM=arrYLim
+    )   
+    
+    ###Create graph data
+    imageRawData <- ggplot(data = plotData,aes(x = Sample, y = FPKM)) +
+      geom_bar(colour = 'black', stat='identity', width=.4) + 
+      labs(x = xTitleName, y = yTitleName) +
+      theme(legend.text = element_text(size = 20, colour = "red"))
+    
+    ###Save as PNG file cairo-png
+    png(file=outputFilePath, bg="transparent")
+    print(imageRawData)
+    dev.off()
   }
   
   ###Initalize class

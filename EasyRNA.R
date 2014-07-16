@@ -38,14 +38,14 @@ if(length(args) < 1) {
 ###Check action of EasyRNA tool
 switch(args[1],
   ###Plot of  the number of RNAs that have FPKM > MAX_NUMBER
-  fpkm={    
-    ###Create Simple Graph
-    oSimpleGraph <- SimpleGraph()
-    
+  fpkm={
     ###Check input data of FPKM
     if(length(args) < 3) {
       help()
     }
+    
+    ###Create Simple Graph
+    oSimpleGraph <- SimpleGraph(FALSE)
         
     ###Create JSON parser
     oParser <- newJSONParser()
@@ -56,43 +56,8 @@ switch(args[1],
     ###Get all input data
     arrInputData <- oParser$getObject()
     
-    ###Debug information
-    #for (iLoop in 1:length(arrInputData)) {
-    #  print(arrInputData[[iLoop]]$name)
-    #}
-    
-    ###Create vector for graph
-    arrXLim <- c()
-    arrYLim <- c()
-    
-    ###Loop group to get sample and execute the FPKM processing
-    for (groupName in arrInputData) {
-      for (itemName in groupName$items) {
-        arrXLim <- append(arrXLim, itemName$name)
-        arrYLim <- append(arrYLim, oSimpleGraph$getFPKMCounter(itemName$sf, as.numeric(args[3])))
-      }      
-    }
-         
-    ###Create a title name
-    yTitleName <- sprintf("FPKM > %d", as.numeric(args[3]))
-    xTitleName <- "Sample"
-    
-    ###Create plot data
-    plotData <- data.frame(
-      Sample=factor(arrXLim),
-      FPKM=arrYLim
-    )   
-    
-    ###Create graph data
-    imageRawData <- ggplot(data = plotData,aes(x = Sample, y = FPKM)) +
-                          geom_bar(colour = 'black', stat='identity', width=.3) + 
-                          labs(x = xTitleName, y = yTitleName) +
-                          theme(legend.text = element_text(size = 20, colour = "red"))
-        
-    ###Save as PNG file cairo-png
-    png(file="./fpkm.png", bg="transparent")
-    print(imageRawData)
-    dev.off()
+    ###Draw FPKM graph
+    oSimpleGraph$drawFPKM(arrInputData, "./fpkm.png", as.numeric(args[3]))    
   },
   ###Difference abundance in patient
   diff={    
