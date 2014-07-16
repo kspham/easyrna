@@ -52,12 +52,9 @@ switch(args[1],
     
     ###Add JSON data to parse
     oParser$addData(args[2])    
-    
-    ###Get all input data
-    arrInputData <- oParser$getObject()
-    
+        
     ###Draw FPKM graph
-    oSimpleGraph$drawFPKM(arrInputData, "./fpkm.png", as.numeric(args[3]))    
+    oSimpleGraph$drawFPKM(oParser$getObject(), "./fpkm.png", as.numeric(args[3]))    
   },
   ###Difference abundance in patient
   diff={    
