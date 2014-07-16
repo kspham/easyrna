@@ -1,7 +1,6 @@
 # [sailfish version]	0.6.3
 # [kmer length]	20
 # [using canonical kmers]	false
-# [command]	/home/linuxpham/source/sailfish/bin/sailfish --index /home/linuxpham/yodownload/sailfish/index/mouse/transcriptome --counts /home/linuxpham/yodownload/sailfish/quant/10000188676/078b8bca707dd4821ea2397a1980aa69/reads.sfc --threads 2 --lutfile /home/linuxpham/yodownload/sailfish/index/mouse/transcriptome --iterations 1000 --min_abundance 0 --delta 0.005 --out /home/linuxpham/yodownload/sailfish/quant/10000188676/078b8bca707dd4821ea2397a1980aa69/quant.sf 
 # Transcript	Length	TPM	RPKM	KPKM	EstimatedNumKmers	EstimatedNumReads
 NM_001168316	2283	34868.2	8270.59	8270.59	26116.4	816.136
 NM_174914	2385	101221	24009.2	24009.2	79230.4	2475.95
