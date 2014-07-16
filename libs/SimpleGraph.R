@@ -2,7 +2,7 @@
 ###Created on Jul 13, 2014
 ###Simple graph class
 
-SimpleGraph <- function(dataFrame){
+SimpleGraph <- function(){
   ###Class description
   information = list(
     author = "Linuxpham <thaihoabo@gmail.com>",
@@ -15,20 +15,14 @@ SimpleGraph <- function(dataFrame){
   classTable = list(
     infor = information,
     get = function(x) classTable[[x]],
-    set = function(x, value) classTable[[x]] <<- value,
-    dataFrame = dataFrame
+    set = function(x, value) classTable[[x]] <<- value
   )
   
   ###Show class information
   classTable$showClassInfo = function(){
     print(classTable$infor)
   }
-  
-  ###Show Data Frame
-  classTable$showDataFrame = function(){
-    print(classTable$dataFrame)
-  }
- 
+   
   ###Get counter number of RNAs that have FPKM > 5
   classTable$getFPKMCounter <- function(quantFilePath, iMaxNumber){
     ###Get all frame data

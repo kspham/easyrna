@@ -1,8 +1,8 @@
 #!/usr/local/bin/Rscript
 ###Created on Jul 13, 2014
 ###Easy RNA script tools
-library(rjson)
-library(ggplot2)
+allLibs <- c("rjson", "ggplot2", "RColorBrewer", "Cairo")
+lapply(allLibs, library, character.only = TRUE)
 
 ###Get current directory
 currDir <- getwd()
@@ -40,7 +40,7 @@ switch(args[1],
   ###Plot of  the number of RNAs that have FPKM > MAX_NUMBER
   fpkm={    
     ###Create Simple Graph
-    oSimpleGraph <- SimpleGraph(data.frame(name="Hoa", "thaihoabo@gmail.com"))
+    oSimpleGraph <- SimpleGraph()
     
     ###Check input data of FPKM
     if(length(args) < 3) {
@@ -74,7 +74,8 @@ switch(args[1],
     }
          
     ###Create a title name
-    titleName <- sprintf("RNAs that have FPKM > %d", as.numeric(args[3]))
+    yTitleName <- sprintf("FPKM > %d", as.numeric(args[3]))
+    xTitleName <- "Sample"
     
     ###Create plot data
     plotData <- data.frame(
@@ -83,11 +84,15 @@ switch(args[1],
     )   
     
     ###Create graph data
-    imageRawData <- ggplot(data=plotData, aes(Sample, FPKM) ) + geom_bar()
-    #imageRawData <- ggplot(data=plotData, aes(Sample, FPKM) ) + geom_bar() + opts(title=titleName) + scale_x_discrete("Sample")
+    imageRawData <- ggplot(data = plotData,aes(x = Sample, y = FPKM)) +
+                          geom_bar(colour = 'black', stat='identity', width=.3) + 
+                          labs(x = xTitleName, y = yTitleName) +
+                          theme(legend.text = element_text(size = 20, colour = "red"))
         
-    ###Save as PNG file
-    ggsave(imageRawData, filename="fpkm.png", path="./")    
+    ###Save as PNG file cairo-png
+    png(file="./fpkm.png", bg="transparent")
+    print(imageRawData)
+    dev.off()
   },
   ###Difference abundance in patient
   diff={    
