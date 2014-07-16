@@ -28,8 +28,8 @@ License
 "EasyRNA" is distributed under GNU GPL v2 license, see LICENSE.
 
 It also uses third-party librarires and programs:
-+ rjson written by Alex Couture-Beil (Install : install.packages("rjson"))
-+ ggplot2 written by Hadley Wickham, Winston Chang (Install : install.packages("ggplot2"))
++ rjson written by Alex Couture-Beil
++ ggplot2 written by Hadley Wickham, Winston Chang
 + Cairo written by Simon Urbanek, Jeffrey Horner
 + RColorBrewer written by Erich Neuwirth
 
