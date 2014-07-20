@@ -1,0 +1,63 @@
+{
+    "outdir": "./example/out",    
+    "actions":"fpkm,diff",    
+    "fpkm_args":"5",
+    "inputs": [
+        [
+            {
+                "items": [
+                    {
+                        "name": "sample1",
+                        "sf": "./example/data1.sf"
+                    },
+                    {
+                        "name": "sample2",
+                        "sf": "./example/data2.sf"
+                    }
+                ],
+                "name": "Group A"
+            },
+            {
+                "items": [
+                    {
+                        "name": "sample3",
+                        "sf": "./example/data3.sf"
+                    },
+                    {
+                        "name": "sample4",
+                        "sf": "./example/data4.sf"
+                    }
+                ],
+                "name": "Group B"
+            }
+        ],
+        [
+            {
+                "items": [
+                    {
+                        "name": "sample5",
+                        "sf": "./example/data5.sf"
+                    },
+                    {
+                        "name": "sample6",
+                        "sf": "./example/data6.sf"
+                    }
+                ],
+                "name": "Group C"
+            },
+            {
+                "items": [
+                    {
+                        "name": "sample7",
+                        "sf": "./example/data7.sf"
+                    },
+                    {
+                        "name": "sample8",
+                        "sf": "./example/data8.sf"
+                    }
+                ],
+                "name": "Group D"
+            }
+        ]
+    ]
+}

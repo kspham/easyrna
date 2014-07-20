@@ -39,9 +39,9 @@ SimpleGraph <- function(debugFlag = FALSE){
   ###Draw FPKM graph
   classTable$drawFPKM <- function(arrInputData, outputFilePath, iMaxNumber) {
     ###Debug information
-    if(classTable$debug == TRUE) {
+    if(classTable$debug == TRUE) {      
       for (iLoop in 1:length(arrInputData)) {
-        print(arrInputData[[iLoop]]$name)
+        print(arrInputData[[iLoop]])
       }
     }    
     
@@ -49,12 +49,17 @@ SimpleGraph <- function(debugFlag = FALSE){
     arrXLim <- c()
     arrYLim <- c()
     
-    ###Loop group to get sample and execute the FPKM processing
-    for (groupName in arrInputData) {
-      for (itemName in groupName$items) {
-        arrXLim <- append(arrXLim, itemName$name)
-        arrYLim <- append(arrYLim, classTable$getFPKMCounter(itemName$sf, iMaxNumber))
-      }      
+    ###Loop comparing number to check FPKM
+    for (iLoop in 1:length(arrInputData)) {
+      ###Loop group in everyone comparing
+      for (groupName in arrInputData[[iLoop]]) {
+        ###Loop items in a group
+        for (itemName in groupName$items) {
+          print(sprintf("Counter FPKM of sample: %s", itemName$name))
+          arrXLim <- append(arrXLim, itemName$name)
+          arrYLim <- append(arrYLim, classTable$getFPKMCounter(itemName$sf, iMaxNumber))
+        }      
+      }
     }
     
     ###Create a title name

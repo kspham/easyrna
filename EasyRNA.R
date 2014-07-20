@@ -21,10 +21,18 @@ flush.console()
 help <- function() {
   print("EasyRNA tools - Version 1.0")
   print("Author : Hoa.PT and Son.PK")
-  print("Using  : Rscript EasyRNA.R <Action> <Json_Data>")
-  print("                           +fpkm ..............")
-  print("                           +diff ..............")
+  print("Using  : Rscript EasyRNA.R <Json_File>") 
   quit()
+}
+
+###Check existing param in vector
+existParam <- function(arrVector, paramName) {
+  return(is.element(paramName, arrVector))
+}
+
+###Check empty string data
+isEmptyString <- function(stringData) {
+  return(is.null(stringData) || (stringData == "") || (length(stringData) == 0))
 }
 
 ###Get all ARGS data
@@ -35,36 +43,32 @@ if(length(args) < 1) {
   help()
 }
 
-###Check action of EasyRNA tool
-switch(args[1],
-  ###Plot of  the number of RNAs that have FPKM > MAX_NUMBER
-  fpkm={
-    ###Check input data of FPKM
-    if(length(args) < 3) {
-      help()
-    }
-    
-    ###Create Simple Graph
-    oSimpleGraph <- SimpleGraph(FALSE)
-        
-    ###Create JSON parser
-    oParser <- newJSONParser()
-    
-    ###Add JSON data to parse
-    oParser$addData(args[2])    
-        
-    ###Draw FPKM graph
-    oSimpleGraph$drawFPKM(oParser$getObject(), "./fpkm.png", as.numeric(args[3]))    
-  },
-  ###Difference abundance in patient
-  diff={    
-    print('diff')    
-  },
-  ###Help table information
+###Get JSON data from file
+jsonData <- fromJSON(file = toString(args[1]), method = "C", unexpected.escape = "error")
+
+###Create output directory
+dir.create(jsonData$outdir, showWarnings = FALSE, recursive = TRUE, mode = "0644")
+
+###Get list action
+arrAction <- as.vector(unlist(strsplit(jsonData$actions,",")),mode="list")
+
+###Plot of  the number of RNAs that have FPKM > MAX_NUMBER
+if (existParam(arrAction, "fpkm") == TRUE) {  
+  ###Check FPKM args   
+  if(isEmptyString(jsonData$fpkm_args) == TRUE)
   {
-    help()
+    print("Please input the FPKM min number")
+    quit()
   }
-)
+  
+  ###Create Simple Graph
+  oSimpleGraph <- SimpleGraph(FALSE)
+  
+  ###Draw FPKM graph
+  oSimpleGraph$drawFPKM(jsonData$inputs, sprintf("%s/%s.%d.%s", jsonData$outdir, "fpkm", as.numeric(jsonData$fpkm_args), "png"), as.numeric(jsonData$fpkm_args))
+} else {
+  help()
+}
 
 ###Finish the script EasyRNA
 print("Finish!!!")
