@@ -4,6 +4,9 @@
 allLibs <- c("rjson", "ggplot2", "RColorBrewer", "Cairo")
 lapply(allLibs, library, character.only = TRUE)
 
+###Use RColorBrewer palletes
+display.brewer.all()
+
 ###Get current directory
 currDir <- getwd()
 
