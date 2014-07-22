@@ -1,5 +1,5 @@
 {
-    "outdir": "./example/out",    
+    "outdir": "./example/out",     
     "actions":"fpkm,diff",    
     "fpkm_args":"5",
     "inputs": [

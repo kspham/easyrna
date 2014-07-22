@@ -56,7 +56,7 @@ SimpleGraph <- function(debugFlag = FALSE){
         ###Loop items in a group
         for (itemName in groupName$items) {          
           iTotalFPKM <- classTable$getFPKMCounter(itemName$sf, iMaxNumber)
-          print(sprintf("Counter FPKM of sample: %s (%d)", itemName$name, iTotalFPKM))
+          print(sprintf("Counter FPKM of %s : (%d)", itemName$name, iTotalFPKM))
           arrYLim <- append(arrYLim, iTotalFPKM)
           arrXLim <- append(arrXLim, sprintf("%s (%d)", itemName$name, iTotalFPKM))
         }      
