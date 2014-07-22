@@ -81,7 +81,7 @@ SimpleGraph <- function(debugFlag = FALSE){
       theme(legend.text = element_text(size = 20, colour = "red"))
     
     ###Save as PNG file cairo-png
-    png(file=outputFilePath, bg="transparent")
+    png(file=outputFilePath, width = 1024, height = 800, bg="transparent")
     print(imageRawData)
     dev.off()
   }
