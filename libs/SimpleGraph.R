@@ -54,27 +54,29 @@ SimpleGraph <- function(debugFlag = FALSE){
       ###Loop group in everyone comparing
       for (groupName in arrInputData[[iLoop]]) {
         ###Loop items in a group
-        for (itemName in groupName$items) {
-          print(sprintf("Counter FPKM of sample: %s", itemName$name))
-          arrXLim <- append(arrXLim, itemName$name)
-          arrYLim <- append(arrYLim, classTable$getFPKMCounter(itemName$sf, iMaxNumber))
+        for (itemName in groupName$items) {          
+          iTotalFPKM <- classTable$getFPKMCounter(itemName$sf, iMaxNumber)
+          print(sprintf("Counter FPKM of sample: %s (%d)", itemName$name, iTotalFPKM))
+          arrYLim <- append(arrYLim, iTotalFPKM)
+          arrXLim <- append(arrXLim, sprintf("%s (%d)", itemName$name, iTotalFPKM))
         }      
       }
     }
     
     ###Create a title name
     yTitleName <- sprintf("FPKM > %d", iMaxNumber)
-    xTitleName <- "RNA Samples"
+    xTitleName <- "RNA Order"
     
     ###Create plot data
     plotData <- data.frame(
-      Sample=factor(arrXLim),
-      FPKM=arrYLim
+      Samples=factor(arrXLim),
+      FPKM=arrYLim,
+      Title=c(1:length(arrYLim))
     )   
     
     ###Create graph data
-    imageRawData <- ggplot(data = plotData,aes(x = Sample, y = FPKM)) +
-      geom_bar(colour = 'black', stat='identity', width=.4) + 
+    imageRawData <- ggplot(data = plotData, aes(x = Title, y = FPKM)) +
+      geom_bar(aes(fill = Samples), stat='identity', width=.4) + geom_line() +
       labs(x = xTitleName, y = yTitleName) +
       theme(legend.text = element_text(size = 20, colour = "red"))
     
