@@ -66,6 +66,12 @@ if (existParam(arrAction, "fpkm") == TRUE) {
   
   ###Create Simple Graph
   oSimpleGraph <- SimpleGraph(FALSE)
+
+  ###drawHeatmap Draw a heatmap picture
+  ##INPUT: (1) a sorted list of gene names, (2) A list of groups that do
+  #not have common elements
+  #OUTPUT: a heatmap plot
+  #EXAMPLE: http://gtbinf.files.wordpress.com/2013/11/figure1.png
   
   ###Draw FPKM graph
   oSimpleGraph$drawFPKM(jsonData$inputs, sprintf("%s/%s.%d.%s", jsonData$outdir, "fpkm", as.numeric(jsonData$fpkm_args), "png"), as.numeric(jsonData$fpkm_args))
