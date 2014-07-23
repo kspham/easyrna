@@ -36,6 +36,12 @@ SimpleGraph <- function(debugFlag = FALSE){
     return(iTotalLine)
   }
   
+  ###Process TSV for D3JS
+  classTable$processFPKMD3JS <- function(outputFilePath, outputName, letterList, letterFrequency) {
+    sCommand <- sprintf("python '%s/%s' -o '%s' -n %s -l %s -f %s", LIBRARY_PATH, "FPKM.py", outputFilePath, outputName, shQuote(letterList), shQuote(letterFrequency))
+    system(sCommand, intern=TRUE)
+  }
+  
   ###Draw FPKM graph
   classTable$drawFPKM <- function(arrInputData, outputFilePath, iMaxNumber) {
     ###Debug information
@@ -43,8 +49,8 @@ SimpleGraph <- function(debugFlag = FALSE){
       for (iLoop in 1:length(arrInputData)) {
         print(arrInputData[[iLoop]])
       }
-    }    
-    
+    }
+        
     ###Create vector for graph
     arrXLim <- c()
     arrYLim <- c()
@@ -81,9 +87,19 @@ SimpleGraph <- function(debugFlag = FALSE){
       theme(legend.text = element_text(size = 20, colour = "red"))
     
     ###Save as PNG file cairo-png
-    png(file=outputFilePath, width = 1024, height = 800, bg="transparent")
+    png(file=sprintf("%s/%s.%d.%s", outputFilePath, "fpkm", iMaxNumber, "png"), width = 1024, height = 800, bg="transparent")
     print(imageRawData)
     dev.off()
+    
+    ###Save as SVG file
+    svg(file=sprintf("%s/%s.%d.%s", outputFilePath, "fpkm", iMaxNumber, "svg"), width = 14, height = 7, bg="transparent")
+    print(imageRawData)
+    dev.off()
+    
+    ###Save as TSV for D3JS
+    letterList <- paste(arrXLim, collapse=",")    
+    letterFrequency <- paste(arrYLim, collapse=",")
+    classTable$processFPKMD3JS(outputFilePath, sprintf("%s.%d", "fpkm", iMaxNumber), letterList, letterFrequency)
   }
   
   ###Initalize class

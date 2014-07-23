@@ -4,17 +4,13 @@
 allLibs <- c("rjson", "ggplot2", "RColorBrewer", "Cairo")
 lapply(allLibs, library, character.only = TRUE)
 
-###Use RColorBrewer palletes
-display.brewer.all()
-
-###Get current directory
-currDir <- getwd()
-
-###Get library path
-currLiraryPath <- sprintf("%s%s", currDir,"/libs")
+###Get current directory, library path and templates path
+DOCUMENT_ROOT <- getwd()
+LIBRARY_PATH <- sprintf("%s%s", DOCUMENT_ROOT,"/libs")
+TEMPLATE_PATH <- sprintf("%s%s", DOCUMENT_ROOT,"/templates")
 
 ###Load all R script
-file.sources <- list.files(c(currLiraryPath), pattern="*.R$", full.names=TRUE, ignore.case=TRUE)
+file.sources <- list.files(c(LIBRARY_PATH), pattern="*.R$", full.names=TRUE, ignore.case=TRUE)
 sapply(file.sources, source, .GlobalEnv)
 
 ###Flush all console
@@ -74,7 +70,7 @@ if (existParam(arrAction, "fpkm") == TRUE) {
   #EXAMPLE: http://gtbinf.files.wordpress.com/2013/11/figure1.png
   
   ###Draw FPKM graph
-  oSimpleGraph$drawFPKM(jsonData$inputs, sprintf("%s/%s.%d.%s", jsonData$outdir, "fpkm", as.numeric(jsonData$fpkm_args), "png"), as.numeric(jsonData$fpkm_args))
+  oSimpleGraph$drawFPKM(jsonData$inputs, jsonData$outdir, as.numeric(jsonData$fpkm_args))
 } else {
   help()
 }
