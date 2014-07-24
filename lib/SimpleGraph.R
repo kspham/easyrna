@@ -38,7 +38,7 @@ SimpleGraph <- function(debugFlag = FALSE){
   
   ###Process TSV for D3JS
   classTable$processFPKMD3JS <- function(outputFilePath, outputName, letterList, letterFrequency) {
-    sCommand <- sprintf("python '%s/%s' -o '%s' -n %s -l %s -f %s", LIBRARY_PATH, "FPKM.py", outputFilePath, outputName, shQuote(letterList), shQuote(letterFrequency))
+    sCommand <- sprintf("python '%s/%s' -o '%s' -n %s -l %s -f %s", BIN_PATH, "FPKM.py", outputFilePath, outputName, shQuote(letterList), shQuote(letterFrequency))
     system(sCommand, intern=TRUE)
   }
   

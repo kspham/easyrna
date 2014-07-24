@@ -12,8 +12,8 @@ import optparse, shutil
 
 ###Define the general information
 DOCUMENT_ROOT = os.path.realpath(os.path.abspath("./"))
-LIBRARY_PATH = os.path.realpath(DOCUMENT_ROOT + "/libs")
-TEMPLATE_PATH = os.path.realpath(DOCUMENT_ROOT + "/templates")
+LIBRARY_PATH = os.path.realpath(DOCUMENT_ROOT + "/lib")
+TEMPLATE_PATH = os.path.realpath(DOCUMENT_ROOT + "/template")
 
 ###Parse command line options
 parserInstance = optparse.OptionParser(usage="usage: python %prog [options]", version="FPKM 1.0")
@@ -35,8 +35,7 @@ FREQUENCY_DATA = str(parserInstance.values.frequency)
 
 ###Escape shell
 def shellEscape(s):
-   return s.replace("(","\\(").replace(")","\\)")
-   #return s.replace("(","\\(").replace(")","\\)").replace(" ","\\ ")   
+   return s.replace("(","\\(").replace(")","\\)") 
 
 ###Main function handler
 def main():

@@ -6,8 +6,9 @@ lapply(allLibs, library, character.only = TRUE)
 
 ###Get current directory, library path and templates path
 DOCUMENT_ROOT <- getwd()
-LIBRARY_PATH <- sprintf("%s%s", DOCUMENT_ROOT,"/libs")
-TEMPLATE_PATH <- sprintf("%s%s", DOCUMENT_ROOT,"/templates")
+LIBRARY_PATH <- sprintf("%s%s", DOCUMENT_ROOT,"/lib")
+TEMPLATE_PATH <- sprintf("%s%s", DOCUMENT_ROOT,"/template")
+BIN_PATH <- sprintf("%s%s", DOCUMENT_ROOT,"/bin")
 
 ###Load all R script
 file.sources <- list.files(c(LIBRARY_PATH), pattern="*.R$", full.names=TRUE, ignore.case=TRUE)
