@@ -161,10 +161,20 @@ SimpleGraph <- function(debugFlag = FALSE){
           graphData[jLoop, kLoop] <- arrSampleColData[jLoop][[1]][[kLoop]]
         }
       }
+      
+      ###Creates a colour palette
+      scaleyellowred <- colorRampPalette(c("lightyellow", "red"), space = "rgb")(100)
                  
       ###Save as PNG file cairo-png
       png(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.png"), width = 1024, height = 800, bg="transparent")
-      heatmap(graphData, col = heat.colors(256),  margins=c(5,10))
+      #heatmap.2(graphData, col=brewer.pal(9,"Blues"),  margins=c(5,10))
+      heatmap(graphData, col=scaleyellowred, margins=c(10, 3))
+      dev.off()
+      
+      ###Save as SVG file
+      svg(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.svg"), width = 14, height = 7, bg="transparent")
+      #heatmap.2(graphData, col=brewer.pal(9,"Blues"),  margins=c(5,10))
+      heatmap(graphData, col=scaleyellowred, margins=c(10, 3))
       dev.off()
     }
   }

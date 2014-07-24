@@ -1,6 +1,7 @@
 #!/usr/local/bin/Rscript
 ###Created on Jul 13, 2014
 ###Easy RNA script tools
+#allLibs <- c("rjson", "ggplot2", "RColorBrewer", "Cairo", "gplots")
 allLibs <- c("rjson", "ggplot2", "RColorBrewer", "Cairo")
 lapply(allLibs, library, character.only = TRUE)
 
