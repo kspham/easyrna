@@ -1,1 +1,1 @@
-Rscript EasyRNA.R ./example/data.json
+python easyrna.py -i ./example/data.json

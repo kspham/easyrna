@@ -35,7 +35,8 @@ FREQUENCY_DATA = str(parserInstance.values.frequency)
 
 ###Escape shell
 def shellEscape(s):
-   return s.replace("(","\\(").replace(")","\\)")#.replace(" ","\\ ")
+   return s.replace("(","\\(").replace(")","\\)")
+   #return s.replace("(","\\(").replace(")","\\)").replace(" ","\\ ")   
 
 ###Main function handler
 def main():
