@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """
+"actions":"fpkm,diff,heatmap"
 Created on July 22, 2014
 EasyRNA function
 """

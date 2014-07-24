@@ -63,15 +63,31 @@ if (existParam(arrAction, "fpkm") == TRUE) {
   
   ###Create Simple Graph
   oSimpleGraph <- SimpleGraph(FALSE)
+  
+  ###Draw FPKM graph
+  oSimpleGraph$drawFPKM(jsonData$inputs, jsonData$outdir, as.numeric(jsonData$fpkm_args))
+}
 
+###Plot HeatMap graph
+if (existParam(arrAction, "heatmap") == TRUE) {
+  ###Check FPKM args   
+  if(isEmptyString(jsonData$heatmap_args) == TRUE)
+  {
+    print("Please input the gene list")
+    quit()
+  }
+  
   ###drawHeatmap Draw a heatmap picture
   ##INPUT: (1) a sorted list of gene names, (2) A list of groups that do
   #not have common elements
   #OUTPUT: a heatmap plot
   #EXAMPLE: http://gtbinf.files.wordpress.com/2013/11/figure1.png
   
+  ###Create Simple Graph
+  oSimpleGraph <- SimpleGraph(FALSE)
+  
   ###Draw FPKM graph
-  oSimpleGraph$drawFPKM(jsonData$inputs, jsonData$outdir, as.numeric(jsonData$fpkm_args))
+  oSimpleGraph$drawHeatMap(jsonData$inputs, jsonData$outdir, jsonData$heatmap_args)
 } else {
   help()
 }

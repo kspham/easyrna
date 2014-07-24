@@ -23,6 +23,24 @@ SimpleGraph <- function(debugFlag = FALSE){
   classTable$showClassInfo = function(){
     print(classTable$infor)
   }
+  
+  ###Get counter number of gene list
+  classTable$getFPKMFromGeneList <- function(quantFilePath, arrGenes){
+    ###Get all frame data
+    arrFrameData <- read.table(quantFilePath, header = FALSE, row.names="V1", sep = "\t")
+    
+    ###Create list FPKM data
+    arrFPKM <- c()
+    
+    ###Get list FPKM data
+    for (iLoop in 1:length(arrGenes)) {      
+      rowData <- arrFrameData[arrGenes[[iLoop]],]
+      arrFPKM <- append(arrFPKM, rowData$V3)
+    }
+    
+    ###Return data
+    return(arrFPKM)
+  }
    
   ###Get counter number of RNAs that have FPKM > 5
   classTable$getFPKMCounter <- function(quantFilePath, iMaxNumber){
@@ -36,6 +54,15 @@ SimpleGraph <- function(debugFlag = FALSE){
     return(iTotalLine)
   }
   
+  ###Print data
+  classTable$printData <- function(arrInputData) {    
+    if(classTable$debug == TRUE) {      
+      for (iLoop in 1:length(arrInputData)) {
+        print(arrInputData[[iLoop]])
+      }
+    }
+  }
+  
   ###Process TSV for D3JS
   classTable$processFPKMD3JS <- function(outputFilePath, outputName, letterList, letterFrequency) {
     sCommand <- sprintf("python '%s/%s' -o '%s' -n %s -l %s -f %s", BIN_PATH, "FPKM.py", outputFilePath, outputName, shQuote(letterList), shQuote(letterFrequency))
@@ -43,14 +70,7 @@ SimpleGraph <- function(debugFlag = FALSE){
   }
   
   ###Draw FPKM graph
-  classTable$drawFPKM <- function(arrInputData, outputFilePath, iMaxNumber) {
-    ###Debug information
-    if(classTable$debug == TRUE) {      
-      for (iLoop in 1:length(arrInputData)) {
-        print(arrInputData[[iLoop]])
-      }
-    }
-        
+  classTable$drawFPKM <- function(arrInputData, outputFilePath, iMaxNumber) {        
     ###Create vector for graph
     arrXLim <- c()
     arrYLim <- c()
@@ -100,6 +120,33 @@ SimpleGraph <- function(debugFlag = FALSE){
     letterList <- paste(arrXLim, collapse=",")    
     letterFrequency <- paste(arrYLim, collapse=",")
     classTable$processFPKMD3JS(outputFilePath, sprintf("%s.%d", "fpkm", iMaxNumber), letterList, letterFrequency)
+  }
+  
+  ###Draw HeatMap images  
+  classTable$drawHeatMap <- function(arrInputData, outputFilePath, geneList) {
+    ###Get gene list data
+    arrGenes <- as.vector(unlist(strsplit(geneList,",")),mode="list")
+                
+    ###Loop comparing number to check FPKM
+    for (iLoop in 1:length(arrInputData)) {
+      ###Create vector for graph
+      arrSampleRowName <- c()
+      arrSampleColData <- c()
+      
+      ###Loop group in everyone comparing
+      for (groupName in arrInputData[[iLoop]]) {
+        ###Loop items in a group
+        for (itemName in groupName$items) {          
+          arrFPKM <- classTable$getFPKMFromGeneList(itemName$sf, arrGenes)
+          #arrSampleColData <- append(arrSampleColData, arrFPKM)
+          arrSampleRowName <- append(arrSampleRowName, itemName$name)
+        }      
+      }
+            
+      ###Create matrix graph data
+      graphData <- cbind(arrSampleName, arrGenes)
+      print(graphData)
+    }
   }
   
   ###Initalize class
