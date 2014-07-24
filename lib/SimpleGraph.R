@@ -131,21 +131,41 @@ SimpleGraph <- function(debugFlag = FALSE){
     for (iLoop in 1:length(arrInputData)) {
       ###Create vector for graph
       arrSampleRowName <- c()
-      arrSampleColData <- c()
-      
+      arrSampleColData <- list()
+      arrImageName <- c()
+            
       ###Loop group in everyone comparing
       for (groupName in arrInputData[[iLoop]]) {
-        ###Loop items in a group
+        arrImageName <- append(arrImageName, gsub('([[:punct:]])|\\s+','_', groupName$name))
         for (itemName in groupName$items) {          
-          arrFPKM <- classTable$getFPKMFromGeneList(itemName$sf, arrGenes)
-          #arrSampleColData <- append(arrSampleColData, arrFPKM)
-          arrSampleRowName <- append(arrSampleRowName, itemName$name)
+          arrSampleColData[[length(arrSampleColData)+1]] <- classTable$getFPKMFromGeneList(itemName$sf, arrGenes)
+          arrSampleRowName <- append(arrSampleRowName, itemName$name)          
         }      
       }
-            
+      
+      ###Create image name of two group
+      imageName <- paste(arrImageName, collapse="_") 
+      
+      ###Get row and col number matrix graph data
+      iTotalRow <- length(arrSampleRowName)
+      iTotalCol <- length(arrGenes)
+      
       ###Create matrix graph data
-      graphData <- cbind(arrSampleName, arrGenes)
-      print(graphData)
+      graphData <- matrix(rnorm(iTotalRow * iTotalCol), ncol = iTotalCol, nrow=iTotalRow)
+      rownames(graphData) <- arrSampleRowName
+      colnames(graphData) <- arrGenes   
+                  
+      ###Replace with numbers data
+      for(jLoop in 1:iTotalRow) {        
+        for(kLoop in 1:iTotalCol){          
+          graphData[jLoop, kLoop] <- arrSampleColData[jLoop][[1]][[kLoop]]
+        }
+      }
+                 
+      ###Save as PNG file cairo-png
+      png(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.png"), width = 1024, height = 800, bg="transparent")
+      heatmap(graphData, col = heat.colors(256),  margins=c(5,10))
+      dev.off()
     }
   }
   
