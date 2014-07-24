@@ -22,6 +22,7 @@ System requirements
 ===================
 + Linux or MAC OSX (need XQuartz) or Window
 + R of version at least 2.
++ Python2 of version at least 2.7.
 
 License
 =======
