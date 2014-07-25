@@ -23,11 +23,11 @@ SimpleGraph <- function(debugFlag = FALSE){
   classTable$showClassInfo = function(){
     print(classTable$infor)
   }
-  
+    
   ###Get counter number of gene list
-  classTable$getFPKMFromGeneList <- function(quantFilePath, arrGenes){
+  classTable$getFPKMFromGeneList <- function(cachingKey, quantFilePath, arrGenes){
     ###Get all frame data
-    arrFrameData <- read.table(quantFilePath, header = FALSE, row.names="V1", sep = "\t")
+    arrFrameData <- Utils.readDataFrame(quantFilePath, cachingKey)
     
     ###Create list FPKM data
     arrFPKM <- c()
@@ -43,9 +43,9 @@ SimpleGraph <- function(debugFlag = FALSE){
   }
    
   ###Get counter number of RNAs that have FPKM > 5
-  classTable$getFPKMCounter <- function(quantFilePath, iMaxNumber){
+  classTable$getFPKMCounter <- function(cachingKey, quantFilePath, iMaxNumber){
     ###Get all frame data
-    arrFrameData <- read.table(quantFilePath, header = FALSE, sep = "\t")
+    arrFrameData <- Utils.readDataFrame(quantFilePath, cachingKey)
     
     ###Sum the max TMP
     iTotalLine <- sum(arrFrameData$V3 >= iMaxNumber)
@@ -65,7 +65,7 @@ SimpleGraph <- function(debugFlag = FALSE){
   
   ###Process TSV for D3JS
   classTable$processFPKMD3JS <- function(outputFilePath, outputName, letterList, letterFrequency) {
-    sCommand <- sprintf("python '%s/%s' -o '%s' -n %s -l %s -f %s", BIN_PATH, "FPKM.py", outputFilePath, outputName, shQuote(letterList), shQuote(letterFrequency))
+    sCommand <- sprintf("python '%s/%s' -o '%s' -n %s -l %s -f %s", global.bin_path, "FPKM.py", outputFilePath, outputName, shQuote(letterList), shQuote(letterFrequency))
     system(sCommand, intern=TRUE)
   }
   
@@ -80,9 +80,9 @@ SimpleGraph <- function(debugFlag = FALSE){
       ###Loop group in everyone comparing
       for (groupName in arrInputData[[iLoop]]) {
         ###Loop items in a group
-        for (itemName in groupName$items) {          
-          iTotalFPKM <- classTable$getFPKMCounter(itemName$sf, iMaxNumber)
-          print(sprintf("Counter FPKM of %s : (%d)", itemName$name, iTotalFPKM))
+        for (itemName in groupName$items) {
+          cachingKey <- sprintf("%s_%s", Utils.removeSpaceInString(groupName$name), Utils.removeSpaceInString(itemName$name))
+          iTotalFPKM <- classTable$getFPKMCounter(cachingKey, itemName$sf, iMaxNumber)          
           arrYLim <- append(arrYLim, iTotalFPKM)
           arrXLim <- append(arrXLim, sprintf("%s (%d)", itemName$name, iTotalFPKM))
         }      
@@ -136,9 +136,10 @@ SimpleGraph <- function(debugFlag = FALSE){
             
       ###Loop group in everyone comparing
       for (groupName in arrInputData[[iLoop]]) {
-        arrImageName <- append(arrImageName, gsub('([[:punct:]])|\\s+','_', groupName$name))
-        for (itemName in groupName$items) {          
-          arrSampleColData[[length(arrSampleColData)+1]] <- classTable$getFPKMFromGeneList(itemName$sf, arrGenes)
+        arrImageName <- append(arrImageName, Utils.removeSpaceInString(groupName$name))
+        for (itemName in groupName$items) {
+          cachingKey <- sprintf("%s_%s", Utils.removeSpaceInString(groupName$name), Utils.removeSpaceInString(itemName$name))
+          arrSampleColData[[length(arrSampleColData)+1]] <- classTable$getFPKMFromGeneList(cachingKey, itemName$sf, arrGenes)
           arrSampleRowName <- append(arrSampleRowName, itemName$name)          
         }      
       }
@@ -154,6 +155,7 @@ SimpleGraph <- function(debugFlag = FALSE){
       graphData <- matrix(rnorm(iTotalRow * iTotalCol), ncol = iTotalCol, nrow=iTotalRow)
       rownames(graphData) <- arrSampleRowName
       colnames(graphData) <- arrGenes   
+      print(arrSampleRowName)
                   
       ###Replace with numbers data
       for(jLoop in 1:iTotalRow) {        
@@ -167,14 +169,12 @@ SimpleGraph <- function(debugFlag = FALSE){
                  
       ###Save as PNG file cairo-png
       png(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.png"), width = 1024, height = 800, bg="transparent")
-      #heatmap.2(graphData, col=brewer.pal(9,"Blues"),  margins=c(5,10))
-      heatmap(graphData, col=scaleyellowred, margins=c(10, 3))
+      heatmap(graphData, Rowv = NA, Colv = NA, col=scaleyellowred, margins=c(5,10))
       dev.off()
       
       ###Save as SVG file
       svg(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.svg"), width = 14, height = 7, bg="transparent")
-      #heatmap.2(graphData, col=brewer.pal(9,"Blues"),  margins=c(5,10))
-      heatmap(graphData, col=scaleyellowred, margins=c(10, 3))
+      heatmap(graphData, Rowv = NA, Colv = NA, col=scaleyellowred, margins=c(5,10))
       dev.off()
     }
   }
