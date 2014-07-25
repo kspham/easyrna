@@ -155,8 +155,7 @@ SimpleGraph <- function(debugFlag = FALSE){
       graphData <- matrix(rnorm(iTotalRow * iTotalCol), ncol = iTotalCol, nrow=iTotalRow)
       rownames(graphData) <- arrSampleRowName
       colnames(graphData) <- arrGenes   
-      print(arrSampleRowName)
-                  
+                        
       ###Replace with numbers data
       for(jLoop in 1:iTotalRow) {        
         for(kLoop in 1:iTotalCol){          
