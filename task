@@ -1,4 +1,7 @@
-PCA plot:
+1) Distribution of fpkm for each sample
+INPUT: a sample is presented as a vector of fpkm  values
+OUTPUT: distribution of fpkm values
+2) PCA plot:
 Input: n samples (each sample is represented as a vector of fpkm values, obtained from sailfish) and their group information
 OUPUT: PCA plot. Each sample  is a point in the PCA plot. The group information is used to make the type of the point. For example, samples in group A are presented as stars, samples in group B is presented as circular points.
 Or we can simply use different color for each group.
