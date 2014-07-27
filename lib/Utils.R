@@ -23,12 +23,12 @@ Utils.isEmptyString <- function(stringData) {
 ###Read sample data frame from file
 Utils.readDataFrame <- function(quantFilePath, cachingKey) {    
   ###If is null or length = 0
-  if(is.null(global.list_matrix[[cachingKey]]) || (length(global.list_matrix[[cachingKey]]) == 0)) {
-    global.list_matrix[[cachingKey]] <- read.table(quantFilePath, header = FALSE, row.names="V1", sep = "\t")      
+  if(is.null(global.list_samples[[cachingKey]]) || (length(global.list_samples[[cachingKey]]) == 0)) {
+    global.list_samples[[cachingKey]] <- read.table(quantFilePath, header = FALSE, row.names="V1", sep = "\t")      
   }
   
   ###Return data
-  return(global.list_matrix[[cachingKey]])
+  return(global.list_samples[[cachingKey]])
 }
 
 ###Remove space in string

@@ -1,6 +1,6 @@
 {
     "outdir": "./example/out",     
-    "actions":"fpkm,heatmap", 
+    "actions":"fpkm,heatmap,distribution,pca", 
     "fpkm_args":"10",
     "heatmap_args":"NR_108024,NR_027103,NM_207127,NR_102431,NR_033938,NR_027263,NR_024563,NR_033645,NM_001104548,NR_037856,NR_033827,NR_045786,NR_033872,NR_038857,NM_024031",
     "inputs": [

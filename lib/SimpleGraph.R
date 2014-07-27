@@ -15,6 +15,7 @@ SimpleGraph <- function(debugFlag = FALSE){
   classTable = list(
     infor = information,
     debug = debugFlag,
+    geneVector = c(),
     get = function(x) classTable[[x]],
     set = function(x, value) classTable[[x]] <<- value
   )
@@ -40,6 +41,20 @@ SimpleGraph <- function(debugFlag = FALSE){
     
     ###Return data
     return(arrFPKM)
+  }
+  
+  ###Get counter number FPKM of gene list
+  classTable$getGeneWithFPKMList <- function(cachingKey, quantFilePath){
+    ###Get all frame data
+    arrFrameData <- Utils.readDataFrame(quantFilePath, cachingKey)
+    
+    ###Set vector genes data    
+    if(length(classTable$geneVector) == 0) {
+      classTable$geneVector <- rownames(arrFrameData)
+    }
+                    
+    ###Return data
+    return(arrFrameData[,2])
   }
    
   ###Get counter number of RNAs that have FPKM > 5
@@ -174,6 +189,105 @@ SimpleGraph <- function(debugFlag = FALSE){
       ###Save as SVG file
       svg(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.svg"), width = 14, height = 7, bg="transparent")
       heatmap(graphData, Rowv = NA, Colv = NA, col=scaleyellowred, margins=c(5,10))
+      dev.off()
+    }
+  }
+  
+  ###Draw Distribution images  
+  classTable$drawDistributionMap <- function(arrInputData, outputFilePath) {    
+    ###Loop comparing number to check FPKM
+    for (iLoop in 1:length(arrInputData)) {      
+      ###Loop group in everyone comparing
+      for (groupName in arrInputData[[iLoop]]) {        
+        for (itemName in groupName$items) {
+          ###Get all FPKM data
+          cachingKey <- sprintf("%s_%s", Utils.removeSpaceInString(groupName$name), Utils.removeSpaceInString(itemName$name))
+          arrSampleColData <- classTable$getGeneWithFPKMList(cachingKey, itemName$sf)
+                          
+          ###Create plot data
+          plotData <- data.frame(
+            RNA=factor(classTable$geneVector),
+            FPKM=arrSampleColData,
+            Label=classTable$geneVector
+          )   
+                    
+          ###Create graph data
+          imageRawData <- ggplot(data = plotData, aes(x = RNA, y = FPKM)) + geom_point(aes(color=RNA)) +
+                          geom_rug(col="darkred",alpha=.1) + 
+                          geom_text(aes(label=Label),hjust=0, vjust=0) + 
+                          labs(x = sprintf("FPKM of %s", itemName$name), y = sprintf("RNA of %s", itemName$name))
+          
+          ###Save as PNG file cairo-png
+          png(file=sprintf("%s/%s.%s.%s", outputFilePath, cachingKey, "distribution", "png"), width = 1024, height = 800, bg="transparent")
+          print(imageRawData)
+          dev.off()
+          
+          ###Save as SVG file
+          svg(file=sprintf("%s/%s.%s.%s", outputFilePath, cachingKey, "distribution", "svg"), width = 14, height = 7, bg="transparent")
+          print(imageRawData)
+          dev.off()
+        }      
+      }
+    }
+  }
+  
+  ###Draw PCA images  
+  classTable$drawPCAMap <- function(arrInputData, outputFilePath) {
+    ###Create vector for graph
+    arrSampleRowName <- c()
+    arrSampleColData <- list()
+    
+    ###Loop comparing number to check FPKM
+    for (iLoop in 1:length(arrInputData)) {      
+      ###Loop group in everyone comparing
+      for (groupName in arrInputData[[iLoop]]) {        
+        for (itemName in groupName$items) {
+          cachingKey <- sprintf("%s_%s", Utils.removeSpaceInString(groupName$name), Utils.removeSpaceInString(itemName$name))
+          arrSampleColData[[length(arrSampleColData)+1]] <- classTable$getGeneWithFPKMList(cachingKey, itemName$sf)
+          arrSampleRowName <- append(arrSampleRowName, itemName$name)          
+        }      
+      }
+    }
+    
+    ###Get row and col number matrix graph data
+    iTotalRow <- length(arrSampleRowName)
+    iTotalCol <- length(classTable$geneVector)
+    
+    ###Create matrix graph data
+    graphData <- matrix(rnorm(iTotalRow * iTotalCol), ncol = iTotalCol, nrow=iTotalRow)
+    rownames(graphData) <- arrSampleRowName
+    colnames(graphData) <- classTable$geneVector  
+        
+    ###Replace with numbers data
+    for(jLoop in 1:iTotalRow) {        
+      for(kLoop in 1:iTotalCol){          
+        graphData[jLoop, kLoop] <- arrSampleColData[jLoop][[1]][[kLoop]]
+      }
+    }
+        
+    ###Off this code
+    if(FALSE) {
+      pca1 = prcomp(graphData, scale. = TRUE)
+      print(pca1)
+      head(pca1$rotation)
+      head(pca1$x)
+      scores = as.data.frame(pca1$x)
+      
+      ###Create graph data
+      imageRawData <- ggplot(data = scores, aes(x = PC1, y = PC2, label = rownames(scores))) +
+        geom_hline(yintercept = 0, colour = "gray65") +
+        geom_vline(xintercept = 0, colour = "gray65") +
+        geom_text(colour = "tomato", alpha = 0.8, size = 4) +
+        ggtitle("PCA plot of RNA samples")
+      
+      ###Save as PNG file cairo-png
+      png(file=sprintf("%s/%s", outputFilePath, "pca.png"), width = 1024, height = 800, bg="transparent")
+      print(imageRawData)
+      dev.off()
+      
+      ###Save as SVG file
+      svg(file=sprintf("%s/%s", outputFilePath, "pca.svg"), width = 14, height = 7, bg="transparent")
+      print(imageRawData)
       dev.off()
     }
   }
