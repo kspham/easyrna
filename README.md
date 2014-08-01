@@ -33,6 +33,7 @@ It also uses third-party librarires and programs:
 + ggplot2 written by Hadley Wickham, Winston Chang
 + Cairo written by Simon Urbanek, Jeffrey Horner
 + RColorBrewer written by Erich Neuwirth
++ VennDiagram  written by Jonathan Swinton
 
 Contacts
 ========

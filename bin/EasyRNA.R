@@ -1,7 +1,7 @@
 #!/usr/local/bin/Rscript
 ###Created on Jul 13, 2014
 ###Easy RNA script tools
-allLibs <- c("rjson", "ggplot2", "RColorBrewer", "Cairo")
+allLibs <- c("rjson", "ggplot2", "RColorBrewer", "Cairo", "VennDiagram")
 lapply(allLibs, library, character.only = TRUE, quietly = TRUE, verbose = FALSE)
 
 ###Get current directory, library path and templates path
@@ -30,6 +30,16 @@ if(length(args) < 1) {
 
 ###Get JSON data from file
 jsonData <- fromJSON(file = toString(args[1]), method = "C", unexpected.escape = "error")
+
+###Get output information of images
+global.output_resolution <- as.numeric(jsonData$output_resolution)
+global.output_png_with <- as.numeric(jsonData$output_png_with)
+global.output_png_height <- as.numeric(jsonData$output_png_height)
+global.output_svg_with <- as.numeric(jsonData$output_svg_with)
+global.output_svg_height <- as.numeric(jsonData$output_svg_height)
+global.output_tiff_with <- as.numeric(jsonData$output_tiff_with)
+global.output_tiff_height <- as.numeric(jsonData$output_tiff_height)
+global.output_tiff_compression <- jsonData$output_tiff_compression
 
 ###Create output directory
 dir.create(jsonData$outdir, showWarnings = FALSE, recursive = TRUE, mode = "0644")
@@ -103,6 +113,28 @@ tryCatch({
     
     ###Debug information
     message("End distribution processing")
+  }
+  
+  ###Plot Venn graph
+  if (Utils.existParam(arrAction, "venn") == TRUE) {
+    ###Check FPKM args   
+    if(Utils.isEmptyString(jsonData$venn_args) == TRUE)
+    {
+      print("Please input the ignoring FPKM number")
+      quit()
+    }
+    
+    ###Debug information
+    message("Start venn processing")
+    
+    ###Create Simple Graph
+    oSimpleGraph <- SimpleGraph(FALSE)
+    
+    ###Draw Distribution graph
+    oSimpleGraph$drawVennMap(jsonData$inputs, jsonData$outdir, as.numeric(jsonData$distribution_args))
+    
+    ###Debug information
+    message("End venn processing")
   }
   
   ###Plot PCA graph

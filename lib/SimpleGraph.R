@@ -122,12 +122,17 @@ SimpleGraph <- function(debugFlag = FALSE){
       theme(legend.text = element_text(size = 20, colour = "red"))
     
     ###Save as PNG file cairo-png
-    png(file=sprintf("%s/%s.%d.%s", outputFilePath, "fpkm", iMaxNumber, "png"), width = 1024, height = 800, bg="transparent")
+    png(file=sprintf("%s/%s.%d.%s", outputFilePath, "fpkm", iMaxNumber, "png"), width = global.output_png_with, height = global.output_png_height, res = global.output_resolution, bg="transparent")
+    print(imageRawData)
+    dev.off()
+    
+    ###Save as TIFF file
+    tiff(file=sprintf("%s/%s.%d.%s", outputFilePath, "fpkm", iMaxNumber, "tiff"), width = global.output_tiff_with, height = global.output_tiff_height, compression = global.output_tiff_compression, bg="transparent")
     print(imageRawData)
     dev.off()
     
     ###Save as SVG file
-    svg(file=sprintf("%s/%s.%d.%s", outputFilePath, "fpkm", iMaxNumber, "svg"), width = 14, height = 7, bg="transparent")
+    svg(file=sprintf("%s/%s.%d.%s", outputFilePath, "fpkm", iMaxNumber, "svg"), width = global.output_svg_with, height = global.output_svg_height, bg="transparent")
     print(imageRawData)
     dev.off()
     
@@ -182,12 +187,17 @@ SimpleGraph <- function(debugFlag = FALSE){
       scaleyellowred <- colorRampPalette(c("lightyellow", "red"), space = "rgb")(100)
                  
       ###Save as PNG file cairo-png
-      png(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.png"), width = 1024, height = 800, bg="transparent")
+      png(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.png"), width = global.output_png_with, height = global.output_png_height, bg="transparent")
+      heatmap(graphData, Rowv = NA, Colv = NA, col=scaleyellowred, margins=c(5,10))
+      dev.off()
+      
+      ###Save as TIFF file cairo-png
+      tiff(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.tiff"), width = global.output_tiff_with, height = global.output_tiff_height, compression = global.output_tiff_compression, bg="transparent")
       heatmap(graphData, Rowv = NA, Colv = NA, col=scaleyellowred, margins=c(5,10))
       dev.off()
       
       ###Save as SVG file
-      svg(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.svg"), width = 14, height = 7, bg="transparent")
+      svg(file=sprintf("%s/%s.%s", outputFilePath, imageName, "heatmap.svg"), width = global.output_svg_with, height = global.output_svg_height, bg="transparent")
       heatmap(graphData, Rowv = NA, Colv = NA, col=scaleyellowred, margins=c(5,10))
       dev.off()
     }
@@ -237,17 +247,102 @@ SimpleGraph <- function(debugFlag = FALSE){
                           labs(x = sprintf("FPKM counter of %s", itemName$name), y = sprintf("Genes counter of %s", itemName$name))
           
           ###Save as PNG file cairo-png
-          png(file=sprintf("%s/%s.%s.%d.%s", outputFilePath, cachingKey, "distribution", iIgnoreNumber, "png"), width = 1024, height = 800, bg="transparent")
+          png(file=sprintf("%s/%s.%s.%d.%s", outputFilePath, cachingKey, "distribution", iIgnoreNumber, "png"), width = global.output_png_with, height = global.output_png_height, res = global.output_resolution, bg="transparent")
+          print(imageRawData)
+          dev.off()
+          
+          ###Save as TIFF file
+          tiff(file=sprintf("%s/%s.%s.%d.%s", outputFilePath, cachingKey, "distribution", iIgnoreNumber, "tiff"), width = global.output_tiff_with, height = global.output_tiff_height, compression = global.output_tiff_compression, bg="transparent")
           print(imageRawData)
           dev.off()
           
           ###Save as SVG file
-          svg(file=sprintf("%s/%s.%s.%d.%s", outputFilePath, cachingKey, "distribution", iIgnoreNumber, "svg"), width = 14, height = 7, bg="transparent")
+          svg(file=sprintf("%s/%s.%s.%d.%s", outputFilePath, cachingKey, "distribution", iIgnoreNumber, "svg"), width = global.output_svg_with, height = global.output_svg_height, bg="transparent")
           print(imageRawData)
           dev.off()
         }      
       }
     }
+  }
+  
+  ###Draw Venn images  
+  classTable$drawVennMap <- function(arrInputData, outputFilePath, iIgnoreNumber) {    
+    ###Create venn sequence data    
+    arrCategoryName <- c()
+    arrListData <- list()
+    
+    ###Loop comparing number to check FPKM
+    for (iLoop in 1:length(arrInputData)) {      
+      ###Loop group in everyone comparing
+      for (groupName in arrInputData[[iLoop]]) {
+        groupTrimName <- Utils.removeSpaceInString(groupName$name)
+        
+        ###If existing this group before
+        if(is.null(arrListData[[groupTrimName]]) == FALSE) {
+          next
+        }
+        
+        ###Create list sequence data
+        arrTempData <- c()
+        iCounter <- 0
+        arrCategoryName <- append(arrCategoryName, groupName$name)
+        arrListData[[groupTrimName]] <- c()
+        
+        ###Loop sample data to put in group
+        for (itemName in groupName$items) {
+          ###Get all FPKM data
+          cachingKey <- sprintf("%s_%s", groupTrimName, Utils.removeSpaceInString(itemName$name))
+          arrSampleColData <- classTable$getGeneWithFPKMList(cachingKey, itemName$sf)
+                    
+          ###Check length of category group name
+          if(length(arrListData[[groupTrimName]]) == 0) {
+            arrTempData <- c(arrTempData, arrSampleColData)
+          }
+          else {
+            arrTempData <- arrTempData + arrSampleColData
+          }
+          
+          ###Increase the counter
+          iCounter <- iCounter + 1
+        }    
+        
+        ###Mean data in group name
+        for (tempValue in arrTempData) {
+          iTotalMean <- (tempValue/3)
+          if(iTotalMean >= iIgnoreNumber) {
+            arrListData[[groupTrimName]] <- append(arrListData[[groupTrimName]], iTotalMean)
+          }
+        }        
+      }
+    }
+    
+    ###Create venn plot
+    imageRawData <- venn.diagram(
+      x = arrListData,
+      category.names = arrCategoryName,
+      fill = factor(arrCategoryName),
+      filename = NULL,
+      fontface = "bold",
+      fontfamily = "sans",
+      cat.fontface = "bold",
+      euler.d = TRUE,
+      margin = 0.05
+    )
+        
+    ###Save as PNG file cairo-png
+    png(file=sprintf("%s/%s.%d.%s", outputFilePath, "venn", iIgnoreNumber, "png"), width = global.output_png_with, height = global.output_png_height, res = global.output_resolution, bg="transparent")
+    grid.draw(imageRawData)
+    dev.off()
+    
+    ###Save as TIFF file
+    tiff(file=sprintf("%s/%s.%d.%s", outputFilePath, "venn", iIgnoreNumber, "tiff"), width = global.output_tiff_with, height = global.output_tiff_height, compression = global.output_tiff_compression, bg="transparent")
+    grid.draw(imageRawData)
+    dev.off()
+    
+    ###Save as SVG file
+    svg(file=sprintf("%s/%s.%d.%s", outputFilePath, "venn", iIgnoreNumber, "svg"), width = global.output_svg_with, height = global.output_svg_height, bg="transparent")
+    grid.draw(imageRawData)
+    dev.off()
   }
   
   ###Draw PCA images  
@@ -300,12 +395,12 @@ SimpleGraph <- function(debugFlag = FALSE){
         ggtitle("PCA plot of RNA samples")
       
       ###Save as PNG file cairo-png
-      png(file=sprintf("%s/%s", outputFilePath, "pca.png"), width = 1024, height = 800, bg="transparent")
+      png(file=sprintf("%s/%s", outputFilePath, "pca.png"), width = global.output_png_with, height = global.output_png_height, res = global.output_resolution, bg="transparent")
       print(imageRawData)
       dev.off()
       
       ###Save as SVG file
-      svg(file=sprintf("%s/%s", outputFilePath, "pca.svg"), width = 14, height = 7, bg="transparent")
+      svg(file=sprintf("%s/%s", outputFilePath, "pca.svg"), width = global.output_svg_with, height = global.output_svg_height, bg="transparent")
       print(imageRawData)
       dev.off()
     }
