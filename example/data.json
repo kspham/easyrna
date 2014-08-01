@@ -31,6 +31,19 @@
                     }
                 ],
                 "name": "Group B"
+            },
+            {
+                "items": [
+                    {
+                        "name": "sample5",
+                        "sf": "./example/data5.sf"
+                    },
+                    {
+                        "name": "sample6",
+                        "sf": "./example/data6.sf"
+                    }
+                ],
+                "name": "Group C"
             }
         ],
         [
