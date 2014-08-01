@@ -155,7 +155,7 @@ SimpleGraph <- function(debugFlag = FALSE){
         for (itemName in groupName$items) {
           cachingKey <- sprintf("%s_%s", Utils.removeSpaceInString(groupName$name), Utils.removeSpaceInString(itemName$name))
           arrSampleColData[[length(arrSampleColData)+1]] <- classTable$getFPKMFromGeneList(cachingKey, itemName$sf, arrGenes)
-          arrSampleRowName <- append(arrSampleRowName, sprintf("%s in %s", itemName$name, groupName$name))          
+          arrSampleRowName <- append(arrSampleRowName, sprintf("%s (%s)", itemName$name, groupName$name))          
         }      
       }
       
