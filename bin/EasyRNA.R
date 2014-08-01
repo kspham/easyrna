@@ -2,7 +2,7 @@
 ###Created on Jul 13, 2014
 ###Easy RNA script tools
 allLibs <- c("rjson", "ggplot2", "RColorBrewer", "Cairo")
-lapply(allLibs, library, character.only = TRUE)
+lapply(allLibs, library, character.only = TRUE, quietly = TRUE, verbose = FALSE)
 
 ###Get current directory, library path and templates path
 global.document_root <- getwd()
@@ -15,7 +15,7 @@ global.list_samples <- list()
 
 ###Load all R script
 global.sources <- list.files(c(global.library_path), pattern="*.R$", full.names=TRUE, ignore.case=TRUE)
-sapply(global.sources, source, .GlobalEnv)
+sapply(global.sources, source, .GlobalEnv, verbose = FALSE)
 
 ###Flush all console
 flush.console()
@@ -85,6 +85,13 @@ tryCatch({
   
   ###Plot Distribution graph
   if (Utils.existParam(arrAction, "distribution") == TRUE) {
+    ###Check FPKM args   
+    if(Utils.isEmptyString(jsonData$distribution_args) == TRUE)
+    {
+      print("Please input the ignoring FPKM number")
+      quit()
+    }
+    
     ###Debug information
     message("Start distribution processing")
     
@@ -92,7 +99,7 @@ tryCatch({
     oSimpleGraph <- SimpleGraph(FALSE)
     
     ###Draw Distribution graph
-    oSimpleGraph$drawDistributionMap(jsonData$inputs, jsonData$outdir)
+    oSimpleGraph$drawDistributionMap(jsonData$inputs, jsonData$outdir, as.numeric(jsonData$distribution_args))
     
     ###Debug information
     message("End distribution processing")
@@ -116,7 +123,7 @@ tryCatch({
   }
   
   ###Finish the script EasyRNA
-  print("Finish!!!")
+  message("Finish!!!")
 }, warning = function(condition) {
   message("Warning message:")
   message(condition)  

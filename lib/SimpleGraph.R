@@ -194,7 +194,7 @@ SimpleGraph <- function(debugFlag = FALSE){
   }
   
   ###Draw Distribution images  
-  classTable$drawDistributionMap <- function(arrInputData, outputFilePath) {    
+  classTable$drawDistributionMap <- function(arrInputData, outputFilePath, iIgnoreNumber) {    
     ###Loop comparing number to check FPKM
     for (iLoop in 1:length(arrInputData)) {      
       ###Loop group in everyone comparing
@@ -203,27 +203,46 @@ SimpleGraph <- function(debugFlag = FALSE){
           ###Get all FPKM data
           cachingKey <- sprintf("%s_%s", Utils.removeSpaceInString(groupName$name), Utils.removeSpaceInString(itemName$name))
           arrSampleColData <- classTable$getGeneWithFPKMList(cachingKey, itemName$sf)
-                          
+                
+          ###Create label sequence data
+          arrSampleRowLabel <- c()
+          arrSampleRowValue <- c()
+          arrSampleRowName <- c()
+          
+          ###Create step sequence data          
+          arrStepData <- seq(from = min(arrSampleColData), to = (max(arrSampleColData) + 100), by = 100)
+                    
+          ###Loop to get data          
+          for (iLoopStep in arrStepData) {
+            iTotalElement <- sum((arrSampleColData >= iLoopStep) & (arrSampleColData >= iIgnoreNumber) & (arrSampleColData < (iLoopStep + 100)))
+            if(iTotalElement > 0) {
+              iLogTotalElement <- log(iTotalElement)
+              arrSampleRowValue <- append(arrSampleRowValue, iLogTotalElement)
+              arrSampleRowName <- append(arrSampleRowName, sprintf("[%d-%d]", iLoopStep, (iLoopStep + 100))) 
+              arrSampleRowLabel <- append(arrSampleRowLabel, sprintf("log(%d) == %f", iTotalElement, iLogTotalElement))
+            }            
+          }
+          
           ###Create plot data
           plotData <- data.frame(
-            RNA=factor(classTable$geneVector),
-            FPKM=arrSampleColData,
-            Label=classTable$geneVector
+            STEP=arrSampleRowName,
+            FPKM=arrSampleRowValue,
+            COUNTER=arrSampleRowLabel
           )   
                     
-          ###Create graph data
-          imageRawData <- ggplot(data = plotData, aes(x = RNA, y = FPKM)) + geom_point(aes(color=RNA)) +
-                          geom_rug(col="darkred",alpha=.1) + 
-                          geom_text(aes(label=Label),hjust=0, vjust=0) + 
-                          labs(x = sprintf("FPKM of %s", itemName$name), y = sprintf("RNA of %s", itemName$name))
+          ###Create graph data          
+          imageRawData <- ggplot(data = plotData, aes(x = STEP, y = FPKM)) + 
+                          geom_point(aes(colour = COUNTER), size = 6) +
+                          theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5)) +
+                          labs(x = sprintf("FPKM counter of %s", itemName$name), y = sprintf("Genes counter of %s", itemName$name))
           
           ###Save as PNG file cairo-png
-          png(file=sprintf("%s/%s.%s.%s", outputFilePath, cachingKey, "distribution", "png"), width = 1024, height = 800, bg="transparent")
+          png(file=sprintf("%s/%s.%s.%d.%s", outputFilePath, cachingKey, "distribution", iIgnoreNumber, "png"), width = 1024, height = 800, bg="transparent")
           print(imageRawData)
           dev.off()
           
           ###Save as SVG file
-          svg(file=sprintf("%s/%s.%s.%s", outputFilePath, cachingKey, "distribution", "svg"), width = 14, height = 7, bg="transparent")
+          svg(file=sprintf("%s/%s.%s.%d.%s", outputFilePath, cachingKey, "distribution", iIgnoreNumber, "svg"), width = 14, height = 7, bg="transparent")
           print(imageRawData)
           dev.off()
         }      
